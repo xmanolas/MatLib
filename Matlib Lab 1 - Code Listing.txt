@@ -34,7 +34,8 @@ end
 
 
 %% Exercise 6: 
-%% Script
+
+% Script
 
 sr = 44100;
 freq = 220;
@@ -47,7 +48,7 @@ plot(sinwv(1:1000));
 sound(sinwv, sr)
 
 
-%% Basic Function
+% Basic Function
 
 function [ output_args ] = Untitled2( input_args )
 
@@ -64,7 +65,7 @@ function [ output_args ] = Untitled2( input_args )
 end
 
 
-%% Function with argument passing
+% Function with argument passing
 
 function [sinwv] = SinGen(freq, amp, scnd, sr)
 
@@ -90,7 +91,7 @@ function [sinwv] = SinGen(freq, amp, scnd, sr)
 end
 
 
-%% Extended version of above function with conditions and timeindex and axis labels for plots
+% Extended version of above function with conditions and timeindex and axis labels for plots
 
 function [sinwv] = SinGen(freq, amp, scnd, sr, plotflg, sndflg)
 
