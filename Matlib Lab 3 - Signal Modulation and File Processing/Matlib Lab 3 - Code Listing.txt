@@ -1,0 +1,77 @@
+%%Matlib Lab 3 - Signal Modulation and File Processing
+
+%%Code Listing
+
+%%Exercise 1:
+
+function [amwv, modindex, cmratio] = AM(carfreq,amp, modfreq, modrng, scnd, sr)
+ 
+    % carfreq = frequency in Hz
+    % amp = carrier amplitude
+    % modfreq = modulator frequency
+    % modrng = modulator amplitude/range
+    % scnd = number of seconds to generate
+    % sr = sampling rate
+ 
+    tme = 0:1/sr:scnd; % generate time vector
+    car=amp*sin(2*pi*tme*carfreq); % carrier
+    modl=modrng*sin(2*pi*tme*modfreq); % modulator
+    modl=(modl+1)/2; % scale modulator (make unipolar)
+    amwv=modl.*car; % modulate signal
+    modindex=modrng/amp; % modulation index info
+    cmratio=carfreq/modfreq; % C:M ratio info
+ 
+end
+
+
+%%Exercise 2:
+
+function [fmwv, modindex, cmratio] = FM(carfreq, amp, modfreq, modrng, scnd, sr)
+ 
+    % carfreq = Carrier frequency in Hz
+    % modfreq = Modulator frequency in Hz 
+    % amp = Carrier amplitude
+    % modrng = Modulator amplitude range 
+    % scnd = Signal playing time in seconds
+    % sr = sampling rate
+ 
+    tme = 0:1/sr:scnd; % generate time vector
+    car= 2*pi*tme*carfreq;  % Carrier signal
+    modl=modrng*sin(2*pi*tme*modfreq); % Modulator signal
+    fmwv=amp*sin(car+modl); % FM signal
+    modindex=modrng/modfreq; % modulation index info
+    cmratio=carfreq/modfreq; % C:M ratio info
+ 
+end
+
+
+%%Exercise 3:
+
+[mywav, sr, bts] = wavread(‘Jazz.wav’);
+sound(mywav, sr);
+FFTSpectrum(mywav, 1024, 0);
+wavwrite(mywav, ‘Jazz2.wav’);
+
+
+%%Exercise 4:
+
+function [amwv] = AMwv(wv, modfreq, modamp, sr )
+ 
+    %wv = Carrier signal 
+    %modfreq = Modulator frequency
+    %modamp = Modulator amplitude
+    %sr = sampling rate
+ 
+    tme = 1:(length(wv)); % generate time vector
+    modl = modamp*sin(2*pi*tme*modfreq/sr); % modulator 
+    modl=(modl+1)/2; % scale modulator (make unipolar)  
+    amwv=modl(:).*wv(:); % AM Signal
+ 
+end
+
+
+[mywav, sr, bts] = wavread(‘Jazz.wav’);
+AMwav = AMwv(mywav, 0.5, 1, sr);
+wavwrite(AMwav, ‘JazzAM.wav’);
+
+
