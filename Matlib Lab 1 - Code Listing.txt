@@ -1,0 +1,174 @@
+Matlib Lab 1 - Introduction to Variables, Scripts and Functions
+
+Code Listing
+
+Exercise 1:
+
+a=5;
+b=6;
+sum=a+b;
+sum
+
+Exercise 2:
+plot(a)
+plot(b)
+plot(sum)
+
+Exercise 3/4:
+
+a=5;
+b=6;
+sum=a+b;
+sum
+
+Exercise 5:
+
+function [rslt] = myFunction(x, y)
+ 
+rslt = x+y;
+ 
+end
+
+
+
+
+
+
+
+Exercise 6: 
+
+
+%%%% Script
+
+sr = 44100;
+freq = 220;
+scnd = 2;
+amp = 0.5;
+tme = scnd*sr;
+lngth = 0:tme;
+sinwv = amp*sin(2*pi*lngth*freq/sr);
+plot(sinwv(1:1000));
+sound(sinwv, sr)
+
+
+%%%% Basic Function
+
+function [ output_args ] = Untitled2( input_args )
+
+sr = 44100;
+freq = 220;
+scnd = 2;
+amp = 0.5;
+tme = scnd*sr;
+lngth = 0:tme;
+sinwv = amp*sin(2*pi*lngth*freq/sr);
+plot(sinwv(1:1000));
+sound(sinwv, sr)
+
+end
+
+
+%%%% Function with argument passing
+
+function [sinwv] = SinGen(freq, amp, scnd, sr)
+
+% freq = frequency in Hz
+% amp = amplitude
+% scnd = number of seconds to generate
+% sr = sampling rate
+
+tme = scnd*sr;
+lngth = 0:tme;
+sinwv = amp*sin(2*pi*lngth*freq/sr);
+
+timeindex = 0:(1/sr):(1/sr)*1000;
+
+if plotflg == 1
+plot(timeindex, sinwv(1:1000));
+end
+
+if sndflg == 1
+sound(sinwv, sr)
+ 
+end
+end
+
+%%%% Elongated version with conditions and timeindex and axis labels for plots
+function [sinwv] = SinGen(freq, amp, scnd, sr, plotflg, sndflg)
+
+% freq = frequency in Hz
+% amp = amplitude
+% scnd = number of seconds to generate
+% sr = sampling rate
+
+tme = scnd*sr;
+lngth = 0:tme;
+sinwv = amp*sin(2*pi*lngth*freq/sr);
+
+timeindex = 0:(1/sr):(1/sr)*(1000-1);
+
+if plotflg == 1
+plot(timeindex, sinwv(1:1000));
+xlabel(‘Time (s)’);
+	ylabel(‘Amplitude’);
+title(‘Sine wave’)
+end
+
+if sndflg == 1
+sound(sinwv, sr)
+ 
+end
+end
+
+function [sqrwv] = SquareGen(freq, amp, scnd, sr, plotflg, sndflg)
+
+% freq = frequency in Hz
+% amp = amplitude
+% scnd = number of seconds to generate
+% sr = sampling rate
+
+tme = scnd*sr;
+lngth = 0:tme;
+sinwv = amp*square(2*pi*lngth*freq/sr);
+
+timeindex = 0:(1/sr):(1/sr)*(1000-1);
+
+if plotflg == 1
+plot(timeindex, sqrwv(1:1000));
+end
+
+if sndflg == 1
+sound(sqrwv, sr)
+ 
+end
+end
+
+function [sawwv] = SquareGen(freq, amp, scnd, sr, plotflg, sndflg)
+
+% freq = frequency in Hz
+% amp = amplitude
+% scnd = number of seconds to generate
+% sr = sampling rate
+
+tme = scnd*sr;
+lngth = 0:tme;
+sinwv = amp*sawtooth(2*pi*lngth*freq/sr);
+
+timeindex = 0:(1/sr):(1/sr)*(1000-1);
+
+if plotflg == 1
+plot(timeindex, sawwv(1:1000));
+end
+
+if sndflg == 1
+sound(sawwv, sr)
+ 
+end
+end
+
+
+
+
+
+
+
