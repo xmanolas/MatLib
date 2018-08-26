@@ -1,0 +1,91 @@
+%% Matlib Lab 6 - Basic Synthesis
+
+%% Code Listing
+
+%% Exercise 1:
+
+function [ drumloop ] = DrumLoop(sample, bpm, repeat, sr)
+ 
+	% sample = stored audio sample
+	% bpm = beats per minute
+	% repeat = loop repetitions
+	% sr = sampling rate
+ 
+	bps=bpm/60; % convert bpm to bps 
+	bsamples=sr/bps; % convert bps to number of samples
+	sample=[sample' zeros(1, bsamples-length(sample))]; % adjust sample size
+	drumloop=sample; % initialized drumloop buffer
+ 
+	for i=1:repeat-1
+    		drumloop=[drumloop sample] % create drumloop buffer
+	end
+ 
+end
+
+bass=wavread('BDrumMono.wav');
+hat=wavread('HHatMono.wav');
+bassloop=DrumLoop(bass, 120, 4, 44100);
+hatloop=DrumLoop(hat, 120, 4, 44100);
+hatloop=[zeros(1, 11025) hatloop];
+bassloop=[bassloop zeros(1, 11025)];
+myDrumLoop = (hatloop + bassloop) /2;
+sound(myDrumLoop, 44100);
+
+
+%% Exercise 2:
+
+function [ wvout ] = Xfade( wv1, wv2 )
+ 
+	% wv1 = first wavetable
+	% wv2 = second wavetable
+ 
+	% ensure that wavetables are same size
+	if length(wv1)>length(wv2)
+    		wv2=[wv2 zeros(1, length(wv1)-length(wv2))]
+	elseif length(wv1)<length(wv2)
+    		wv1=[wv1 zeros(1, length(wv2)-length(wv1))]
+	end
+ 
+	% create fade in and fade out envelopes
+	fade=0:1/(length(wv1)/2):1;
+	linein=[fade ones(1, round(length(wv2)/2)-1)];
+	lineout=[ones(1, round(length(wv1)/2)-1) 1-fade];
+ 
+	% apply envelopes to each wavetable
+	wv1=wv1.*lineout;
+	wv2=wv2.*linein;
+ 
+	% adjust length and add wavetables
+	wv1=[wv1 zeros(1, round(length(wv1)/2))];
+	wv2=[zeros(1, round(length(wv2)/2)) wv2];
+	wvout=wv1+wv2;
+ 
+end
+
+
+%% Exercise 3:
+
+function [ granule ] = myGranule( wv, gstart, glngth, sr )
+ 
+	% wv = audio signal
+	% gstart = staring point of granule in original audio signal in samples
+	% glngth = granule length in ms
+	% sr = sampling rate
+ 
+	gend=sr*glngth/1000; % convert length from ms to samples
+	wv=wv(gstart:gstart+gend); % adjust length of audio signal
+	hannw=hann(length(wv)); % create a hanning envelope
+	granule=wv(:).*hannw(:); % apply hanning envelope to audio signal
+ 
+end
+
+x=TriGen(1000, 1, 1, 44100);
+y=SinGen(440, 1, 1, 44100, 0, 0);
+z=wavread(‘HiHat.wav’);
+gran1=myGranule(x, 2000, 100, 44100);
+gran2=myGranule(y, 1, 100, 44100);
+gran3=myGranule(z, 5000, 100, 44100);
+gransum=[gran1 zeros(1, 500) gran2 gran1];
+gransum2=[zeros(1, 200) gran3 gran2 zeros(1, 200) gran1 gran2 gran3];
+gransum=gransum(1:length(gransum2));
+mySound=(gransum+gransum2)/2;
