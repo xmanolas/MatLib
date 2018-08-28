@@ -5,5 +5,5 @@ A series of simple DSP exercises in Matlab used for introductory tutorials. Thes
 Matlab code listing is included as a txt files for each Lab/tutorial. 
 
 
-Please copy code to Matlab as required.
+Copy code and functions to Matlab as required.
 
