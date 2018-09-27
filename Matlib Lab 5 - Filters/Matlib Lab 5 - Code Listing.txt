@@ -1,0 +1,106 @@
+%% Matlib Lab 5 - Filters
+
+%% Code Listing
+
+%% Exercise 1:
+	
+LPfilter=fir1(1, 10000/22050);
+LPfilter2=fir1(100, 10000/22050);
+HPfilter=fir1(4, 4000/22050. ‘high’);
+HPfilter2=fir1(100, 4000/22050. ‘high’);
+BPfilter=fir1(100, [8000/22050 9000/22050], ‘bandpass’);
+MBfilter=fir1(100, [8000/22050 8200/22050 12000/22050 12200/22050], ‘bandpass’);
+freqz(LPfilter);
+
+
+%% Exercise 2:
+
+wnoise=rand(1, 44100);
+
+a=fftfilt(BPfilter, wnoise);
+b=filter(BPfilter,1, wnoise);
+c=conv(BPfilter, wnoise);
+
+sound(a, 44100);
+sound(b, 44100);
+sound(c, 44100);
+
+
+
+%% Exercise 3:
+
+function [ filteredwv ] = LP(wv, order, cutofffrq, sr )
+ 
+	% wv = audio signal
+	% order = filter order
+	% cutofffrq = cut off frequency
+	% sr = sampling rate
+ 
+	filt=fir1(order, cutofffrq/(sr/2)); % create FIR low pass filter
+	filteredwv=fftfilt(filt, wv); % filter audio signal
+ 
+end
+
+
+function [ filteredwv ] = HP(wv, order, cutofffrq, sr )
+ 
+	% wv = audio signal
+	% order = filter order
+	% cutofffrq = cut off frequency
+	% sr = sampling rate
+ 
+	filt=fir1(order, cutofffrq/(sr/2), 'high'); % create FIR low pass filter
+	filteredwv=fftfilt(filt, wv); % filter audio signal
+ 
+end
+
+
+function [ filteredwv ] = BP(wv, order, cutofffrq, sr, bpassflag )
+ 
+	% wv = audio signal
+	% order = filter order
+	% cutofffrq = cut off frequency vector
+	% sr = sampling rate
+ 
+	if bpassflag==0
+    		filt=fir1(order, cutofffrq/(sr/2), 'bandpass'); % create FIR band pass filter
+    		filteredwv=fftfilt(filt, wv); % filter audio signal
+	else
+		filt=fir1(order, cutofffrq/(sr/2), 'stop'); % create FIR band stop filter
+    		filteredwv=fftfilt(filt, wv); % filter audio signal
+	end
+ 
+end
+
+
+function [ filteredwv ] = MultiBP(wv, order, cutofffrq, sr, bpassflag )
+ 
+	% wv = audio signal
+	% order = filter order
+	% cutofffrq = cut off frequency vector
+	% sr = sampling rate
+ 
+	if bpassflag==0
+    		filt=fir1(order, cutofffrq/(sr/2), 'DC-1'); % create FIR multi band pass filter
+    		filteredwv=fftfilt(filt, wv); % filter audio signal
+	else
+    		filt=fir1(order, cutofffrq/(sr/2), 'DC-0'); % create FIR multi band stop filter
+    		filteredwv=fftfilt(filt, wv); % filter audio signal
+	end
+ 
+end
+
+
+%%Exercise 4:
+
+LPfilter=fir1(1, 10000/22050);
+BPfilter=fir1(100, [8000/22050 9000/22050], ‘bandpass’);
+wnoise=rand(1, 44100);
+
+a=fftfilt(BPfilter, wnoise);
+
+b=fftfilt(LPfilter, wnoise);
+
+newwav=(a+b)/2;
+
+

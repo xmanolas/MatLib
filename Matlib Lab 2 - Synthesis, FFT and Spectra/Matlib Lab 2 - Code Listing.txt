@@ -1,0 +1,75 @@
+%% Matlib Lab 2 - Synthesis, FFT and Spectra
+
+%% Code Listing
+
+
+%% Exercise 1:
+
+sineA = SinGen(440, 0.07, 1, 44100, 1, 0)
+sineB = SinGen(880, 0.05, 1, 44100, 1, 0)
+sineC = SinGen(220, 0.02, 1, 44100, 1, 0)
+hold on
+plot(sineA(1:200), 'r')
+plot(sineB(1:200), 'b')
+plot(sineC(1:200), 'g')
+hold off
+sineSum = (sineA + sine B + sineC) / 3
+plot(sineSum(1:200));
+
+
+%% Exercise 2:
+
+sineSumFFT = fft(sineSum)
+plot(sineSumFFT)
+sineSum2 = ifft(sineSumFFT)
+plot(sineSum2)
+plot(abs(sineSumFFT))
+
+
+%% Exercise 3:
+
+X=abs(sineSumFFT);
+plot(X(20:20000));
+
+
+%% Exercise 4:
+
+X=abs(sineSumFFT)
+semilogx(X(1:20000))
+semilogy(X(1:20000))
+loglog(X(1:20000))
+
+
+%% Exercise 5:
+
+X=abs(sineSumFFT)
+dBscl=20*log10(X); 
+dBscl = dBscl - round(max(dBscl)); %Set 0db as max value
+plot(X);
+
+
+%% Exercise 6:
+
+function [] = FFTSpectrum(wv, fftwndwsize, applywndw)
+ 
+if applywndw==1                      %Apply and plot Hanning window to signal
+    hn = hann(length(wv));          
+    wv = wv(:).*hn(:);
+end
+ 
+ 
+x = fft(wv, fftwndwsize);                %Take fft of the signal
+y = abs(x);                     %Take the real values (magnitude) of the fft
+spec=20*log10(y);               %Convert spectral magnitude in db
+spec = spec - round(max(spec)); %Set 0db as the maximum value
+ 
+figure                          %Plot normal window signal
+semilogx(spec);
+ 
+ 
+    axis([20 20000 -60 20]);
+    xlabel('Frequency range Hz'); 
+    ylabel('Magnitude (dB)');
+    title('Hanning Window');
+ 
+end

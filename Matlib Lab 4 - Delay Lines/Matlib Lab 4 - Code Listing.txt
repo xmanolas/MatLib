@@ -1,0 +1,103 @@
+%%Matlib Lab 4 - Delay Lines
+
+%%Code Listing
+
+
+%%Exercise 1:
+
+[x, sr, bts] = wavread(‘Jazz.wav’); % open audio file
+
+x = x’; % covert x columns to rows
+x = [zeros(2, sr) x]; % zero-pad audio vector
+
+
+%%Exercise 2:
+
+function [ dlywv ] = myDelay( wv, dlytime, drywet, sr )
+ 
+	% wv = wave signal
+	% dlytime = delay time in seconds
+	% drywet = dry/wet mix (0 <= drywet <= 1)
+	% sampling rate
+ 
+	wv=wv'; % convert vector columns to rows
+	dlybuf=[zeros(1, dlytime*sr) wv]; % create the delay buffer
+	wv=[wv zeros(1, dlytime*sr)]; % match dry signal/buffer length
+	dlybuf=dlybuf*drywet; % adjust dry/wet level for buffer
+	wv=wv*(1-drywet); % adjust dry/wet level for dry signal
+	dlywv=wv'+ dlybuf'; % add dry signal and delay buffer
+ 
+end
+
+
+%%Exercise 3:
+
+function [ wvout ] = myDelayFB( wv, dlytime, sr, drywet, gain,  feedback, wetflag)
+ 
+	% wv = audio signal
+	% dlytime = delay time in seconds
+	% sr = sampling rate
+	% drywet = dry/wet ratio (0 < drywet < 1)
+	% gain = feedback gain (0 < gain < 1)
+	% feedback = feedback repetitions (integer)
+	% wetflag = sets return output (drywet mix/delay line only)
+ 
+	delbuf=wv'; % copy audio signal to buffer
+	dlyline=zeros(1, length(wv)); % initialize second buffer
+ 
+	for i=1:feedback % repeat for given number of times
+ 
+    		delbuf=myDelay(delbuf, dlytime, 1, sr); % generate temp delay buffer
+    		delbuf=delbuf*gain; % apply gain to temp delay buffer
+    		dlyline=[dlyline zeros(1, dlytime*sr)]; % adjust delay line length
+    		dlyline=(dlyline+delbuf'); % add the temp delay buffer to the delay line
+ 
+	end
+ 
+	dlyline=dlyline*drywet; % adjust volume of feedback delay line
+	wv=[wv zeros(1, (length(dlyline)-length(wv)))]; % adjust length of original audio
+	wv=wv*(1-drywet); % adjust volume of original audio
+	wv=wv+dlyline; % add wave file and feedback delay line
+ 
+	if wetflag==0
+   		wvout=wv; % return resulting audio as output arg
+	else
+    		wvout=dlyline; % return only the delay line
+	end
+    
+end
+
+
+%% Exercise 4:
+
+function [ stereowv ] = myDelayStereo( wv, dlytimeL, dlytimeR, drywet, gain, feedback, sr)
+ 
+	% wv = wave signal
+	% dlytimeR = right channel delay time in seconds 
+	% dlytimeL = left channel delay time in seconds 
+	% drywet = dry/wet mix (0 <= drywet <= 1)
+	% gain = feedback gain (0 <= gain <= 1)
+	% feedback = feedback repetitions (integer)
+	% sr = sampling rate
+ 
+	delayR=myDelayFB(wv, dlytimeR, sr, 1, gain, feedback, 1); %generate right channel 	delayline
+	delayL=myDelayFB(wv, dlytimeL, sr, 1, gain, feedback, 1); %generate left channel 	delayline
+ 
+	if length(delayR)>length(delayL) % adjust length of L/R channels
+   		delayL=[delayL zeros(1, length(delayR)-length(delayL))];
+	else
+   		delayR=[delayR zeros(1, length(delayL)-length(delayR))];
+	end
+ 
+	delayR=delayR*drywet; % adjust right channel delay level
+	delayL=delayL*drywet; % adjust left channel delay level
+	wv=wv*(1-drywet); % adjust dry signal level
+	wv=wv*0.707; % stereo volume adjustment (center stereo image -3db) 
+	wv=[wv zeros(1, (length(delayL) - length(wv)))]; % adjust dry signal length
+	channelR=wv+delayR; % sum right channel
+	channelL=wv+delayL; % sum left channel
+	stereowv=[channelR' channelL']; % generate stereo signal
+ 
+end
+
+
